@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <meta name="description" content="Classic Tic Tac Toe with Player vs Player and Player vs AI modes.">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a2e1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <h1 class="title">Tic Tac Toe</h1>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="btnPvP" onclick="setMode('pvp')">👥 2 Players</button>
+        <button class="mode-btn" id="btnAI"  onclick="setMode('ai')">🤖 vs AI</button>
+      </div>
+    </header>
+
+    <!-- Score strip -->
+    <div class="scoreboard">
+      <div class="score-cell x-score">
+        <span class="score-mark">X</span>
+        <span class="score-name" id="nameX">Player X</span>
+        <span class="score-value" id="scoreX">0</span>
+      </div>
+      <div class="score-cell draw-score">
+        <span class="score-mark draw-mark">—</span>
+        <span class="score-name">Draws</span>
+        <span class="score-value" id="scoreDraw">0</span>
+      </div>
+      <div class="score-cell o-score">
+        <span class="score-value" id="scoreO">0</span>
+        <span class="score-name" id="nameO">Player O</span>
+        <span class="score-mark">O</span>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <p class="status" id="status">Player X's turn</p>
+
+    <!-- Board -->
+    <div class="board" id="board" role="grid" aria-label="Tic Tac Toe board">
+      <button class="cell" data-index="0" onclick="handleClick(0)" aria-label="Cell 1"></button>
+      <button class="cell" data-index="1" onclick="handleClick(1)" aria-label="Cell 2"></button>
+      <button class="cell" data-index="2" onclick="handleClick(2)" aria-label="Cell 3"></button>
+      <button class="cell" data-index="3" onclick="handleClick(3)" aria-label="Cell 4"></button>
+      <button class="cell" data-index="4" onclick="handleClick(4)" aria-label="Cell 5"></button>
+      <button class="cell" data-index="5" onclick="handleClick(5)" aria-label="Cell 6"></button>
+      <button class="cell" data-index="6" onclick="handleClick(6)" aria-label="Cell 7"></button>
+      <button class="cell" data-index="7" onclick="handleClick(7)" aria-label="Cell 8"></button>
+      <button class="cell" data-index="8" onclick="handleClick(8)" aria-label="Cell 9"></button>
+    </div>
+
+    <!-- Win line SVG overlay -->
+    <svg class="win-line-svg" id="winLineSvg" viewBox="0 0 3 3" aria-hidden="true">
+      <line id="winLine" x1="0" y1="0" x2="0" y2="0"
+            stroke="rgba(255,255,255,0.85)" stroke-width="0.12"
+            stroke-linecap="round"/>
+    </svg>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn-reset" onclick="resetGame()">New Game</button>
+      <button class="btn-reset btn-secondary" onclick="resetScore()">Reset Score</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">Built by Sonu H N</footer>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
