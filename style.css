@@ -1,0 +1,404 @@
+/* ============================================================
+   Tic Tac Toe — Design System
+   Theme: blackboard + chalk  |  Caveat (handwritten) + Inter
+   Signature: marks draw themselves on placement (SVG stroke anim)
+   ============================================================ */
+
+:root {
+  --board-bg:   #1a2e1a;
+  --chalk:      #f0ede8;
+  --x-color:    #f0ede8;
+  --o-color:    #e8744a;
+  --grid-line:  rgba(240,237,232,0.28);
+  --card-bg:    rgba(240,237,232,0.07);
+  --card-border:rgba(240,237,232,0.14);
+  --radius:     14px;
+  --cell-size:  108px;
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--board-bg);
+  background-image:
+    /* subtle chalk-dust noise via repeating gradient */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(240,237,232,0.012) 2px,
+      rgba(240,237,232,0.012) 3px
+    );
+  font-family: 'Inter', sans-serif;
+  color: var(--chalk);
+  padding: 20px;
+}
+
+/* ── APP WRAPPER ── */
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ── HEADER ── */
+.header {
+  text-align: center;
+  width: 100%;
+}
+
+.title {
+  font-family: 'Caveat', cursive;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--chalk);
+  margin-bottom: 14px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+/* ── MODE TOGGLE ── */
+.mode-toggle {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.mode-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 30px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: rgba(240,237,232,0.65);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.mode-btn:hover {
+  color: var(--chalk);
+  border-color: rgba(240,237,232,0.35);
+}
+
+.mode-btn.active {
+  background: rgba(240,237,232,0.14);
+  color: var(--chalk);
+  border-color: rgba(240,237,232,0.5);
+}
+
+/* ── SCOREBOARD ── */
+.scoreboard {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+.score-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 12px 8px;
+}
+
+.score-mark {
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.x-score .score-mark  { color: var(--x-color); }
+.o-score .score-mark  { color: var(--o-color); }
+.draw-score {
+  border-color: rgba(240,237,232,0.1);
+}
+
+.draw-mark { color: rgba(240,237,232,0.45); }
+
+.score-name {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(240,237,232,0.5);
+}
+
+.score-value {
+  font-family: 'Caveat', cursive;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--chalk);
+  line-height: 1;
+}
+
+.o-score {
+  /* flip order so O is on the right with mark at the end */
+  flex-direction: column-reverse;
+}
+
+/* ── STATUS ── */
+.status {
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: rgba(240,237,232,0.85);
+  min-height: 2rem;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+.status.x-turn { color: var(--x-color); }
+.status.o-turn { color: var(--o-color); }
+.status.win    { color: #f5e642; font-size: 1.6rem; }
+.status.draw   { color: rgba(240,237,232,0.6); }
+
+/* ── BOARD WRAPPER (positions win-line SVG over the board) ── */
+.board-wrap {
+  position: relative;
+  width: calc(var(--cell-size) * 3 + 4px);
+}
+
+/* ── BOARD ── */
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, var(--cell-size));
+  grid-template-rows:    repeat(3, var(--cell-size));
+  gap: 0;
+  position: relative;
+  /* Draw grid lines via background */
+  background:
+    /* two vertical lines */
+    linear-gradient(var(--grid-line), var(--grid-line)) calc(var(--cell-size)) 0 / 2px 100%,
+    linear-gradient(var(--grid-line), var(--grid-line)) calc(var(--cell-size)*2 + 2px) 0 / 2px 100%,
+    /* two horizontal lines */
+    linear-gradient(var(--grid-line), var(--grid-line)) 0 calc(var(--cell-size)) / 100% 2px,
+    linear-gradient(var(--grid-line), var(--grid-line)) 0 calc(var(--cell-size)*2 + 2px) / 100% 2px;
+  background-repeat: no-repeat;
+}
+
+/* ── CELL ── */
+.cell {
+  width:  var(--cell-size);
+  height: var(--cell-size);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background 0.15s;
+}
+
+.cell:hover:not([data-mark]):not(:disabled) {
+  background: rgba(240,237,232,0.06);
+}
+
+.cell:focus-visible {
+  outline: 2px solid rgba(240,237,232,0.5);
+  outline-offset: -4px;
+  border-radius: 8px;
+}
+
+.cell[data-mark] {
+  cursor: default;
+}
+
+.cell.win-cell {
+  animation: winPulse 0.5s ease;
+}
+
+@keyframes winPulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* ── MARK SVGs (drawn with stroke-dashoffset animation) ── */
+
+/* X mark */
+.cell svg.mark-x {
+  width: 58px; height: 58px;
+  overflow: visible;
+}
+
+.cell svg.mark-x line {
+  stroke: var(--x-color);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  animation: drawMark 0.28s ease-out forwards;
+}
+
+.cell svg.mark-x line:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+/* O mark */
+.cell svg.mark-o {
+  width: 58px; height: 58px;
+}
+
+.cell svg.mark-o circle {
+  fill: none;
+  stroke: var(--o-color);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 170;
+  stroke-dashoffset: 170;
+  animation: drawMark 0.35s ease-out forwards;
+}
+
+@keyframes drawMark {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── WIN LINE SVG OVERLAY ── */
+.win-line-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* The board + win-line together need a relative container */
+#board {
+  position: relative;
+}
+
+.board-container {
+  position: relative;
+  display: inline-block;
+}
+
+#winLineSvg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+#winLine {
+  stroke-dasharray: 5;
+  stroke-dashoffset: 5;
+  transition: stroke-dashoffset 0s;
+}
+
+#winLine.animate {
+  stroke-dasharray: 5;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.45s ease-out;
+}
+
+/* ── CONTROLS ── */
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-reset {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 24px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(240,237,232,0.14);
+  color: var(--chalk);
+  cursor: pointer;
+  border: 1px solid rgba(240,237,232,0.18);
+  transition: background 0.2s, transform 0.12s;
+}
+
+.btn-reset:hover  { background: rgba(240,237,232,0.22); }
+.btn-reset:active { transform: scale(0.96); }
+
+.btn-secondary {
+  background: transparent;
+  color: rgba(240,237,232,0.5);
+  border-color: rgba(240,237,232,0.1);
+}
+
+.btn-secondary:hover {
+  color: var(--chalk);
+  background: rgba(240,237,232,0.06);
+}
+
+/* ── FOOTER ── */
+.footer {
+  font-size: 11px;
+  color: rgba(240,237,232,0.25);
+  letter-spacing: 0.04em;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(15,25,15,0.95);
+  border: 1px solid rgba(240,237,232,0.18);
+  color: var(--chalk);
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Caveat', cursive;
+  font-weight: 600;
+  font-size: 1.05rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 99;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── AI THINKING INDICATOR ── */
+.status.thinking::after {
+  content: " ·";
+  animation: dots 0.8s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0%   { content: " ·"; }
+  33%  { content: " · ·"; }
+  66%  { content: " · · ·"; }
+  100% { content: " ·"; }
+}
+
+/* ── ACCESSIBILITY ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 400px) {
+  :root { --cell-size: 90px; }
+  .title { font-size: 2.4rem; }
+}
+
+@media (max-width: 340px) {
+  :root { --cell-size: 78px; }
+}
